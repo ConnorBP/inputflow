@@ -3,7 +3,11 @@ name = "inputflow-native"
 version = "0.1.0"
 authors = ["ConnorBP <Connor.Postma@gmail.com>"]
 edition = "2021"
-
+description = "inputflow user input abstract plugin framework"
+readme = "../README.md"
+repository = "https://github.com/ConnorBP/inputflow"
+license = "MIT"
+keywords = [ "inputflow", "api", "arduino", "dma" ]
 categories = [ "api-bindings" ]
 
 [lib]

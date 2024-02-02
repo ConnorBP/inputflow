@@ -1,7 +1,14 @@
 [package]
 name = "inputflow"
 version = "0.1.0"
+authors = ["ConnorBP <connor.postma@gmail.com>"]
 edition = "2021"
+description = "inputflow user input abstract plugin framework"
+readme = "../README.md"
+repository = "https://github.com/ConnorBP/inputflow"
+license = "MIT"
+keywords = [ "inputflow", "api", "arduino", "dma" ]
+categories = [ "api-bindings" ]
 
 [dependencies]
 cglue = { version = "0.2.14", default-features = false }
