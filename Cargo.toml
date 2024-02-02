@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "inputflow",
+    "inputflow-native",
+    "inputflow-example-loader"
+]
+default-members = [
+    "inputflow",
+    "inputflow-native",
+    "inputflow-example-loader"
+]

@@ -1,0 +1,15 @@
+[package]
+name = "inputflow"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cglue = { version = "0.2.14", default-features = false }
+abi_stable = { version = "0.10", optional = true }
+libloading = { version = "0.7", optional = true }
+bitflags = "^2.4.2"
+
+[features]
+default = ["plugins", "std"]
+plugins = ["libloading", "abi_stable", "cglue/layout_checks"]
+std = ["cglue/std"]

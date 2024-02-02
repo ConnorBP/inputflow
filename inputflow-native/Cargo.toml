@@ -1,0 +1,16 @@
+[package]
+name = "inputflow-native"
+version = "0.1.0"
+authors = ["ConnorBP <Connor.Postma@gmail.com>"]
+edition = "2021"
+
+categories = [ "api-bindings" ]
+
+[lib]
+crate-type = ["lib", "cdylib"]
+
+[dependencies]
+inputflow = { version = "*", path = "../inputflow"}
+
+[features]
+plugins = ["inputflow/plugins"]
