@@ -15,6 +15,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 inputflow = { version = "*", path = "../inputflow"}
+enigo = "0.1"
 
 [features]
 plugins = ["inputflow/plugins"]

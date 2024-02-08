@@ -1,5 +1,5 @@
-use std::num::NonZeroI32;
 use cglue::result::IntError;
+use std::num::NonZeroI32;
 
 /// Describes possible errors that can occur loading the library
 #[repr(u8)]
@@ -35,4 +35,4 @@ impl std::fmt::Display for InputFlowError {
 
 impl std::error::Error for InputFlowError {}
 
-pub type Result<T> = std::result::Result<T,InputFlowError>;
+pub type Result<T> = std::result::Result<T, InputFlowError>;

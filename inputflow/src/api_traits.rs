@@ -1,22 +1,27 @@
 pub use abi_stable::type_layout::TypeLayout;
-use abi_stable::StableAbi;
-use cglue::prelude::v1::{trait_group::compare_layouts, *};
-use core::mem::MaybeUninit;
-use core::num::NonZeroI32;
-use libloading::{library_filename, Library, Symbol};
+use abi_stable::{abi_stability::GetStaticEquivalent_, std_types::RString, type_identity, StableAbi};
+use cglue::prelude::v1::*;
+use crate::{error::Result, headers::FeatureSupport};
 
-use crate::error::Result;
 
+#[cfg_attr(feature = "plugins", cglue_trait)]// type_identity!()
 /// Main interface for loadable plugins
-pub trait Loadable {
-    type Instance: StableAbi;
-    type InputArg;
-    type CInputArg: StableAbi;
-    type ArgsType;
+pub trait Loadable: GetStaticEquivalent_ {
+    
+    // type Instance: StableAbi;
+    // type InputArg;
+    // type CInputArg: StableAbi;
+    // type ArgsType;
+
+    fn name(&self) -> abi_stable::std_types::RString;
+    /// U8 bitflags of capabilities. Sadly I have not yet figured out how to get the bitflags crate to play nice with abi_stable so this is base type for now
+    fn capabilities(&self) -> u8;
 }
 
+cglue_trait_group!(ControllerFeatures, { Loadable }, { KeyboardWriter, MouseWriter, Clone });
+
 /// Provides ability to send keyboard input to a device (local or external).
-#[cfg_attr(feature = "plugins", cglue_trait)]
+#[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]
 #[int_result]
 pub trait KeyboardWriter: Send {
     /// Sends keyboard press down event
@@ -39,13 +44,11 @@ pub trait KeyboardWriter: Send {
 //
 // }
 
-
 /// Provides ability to send mouse button input to a device (local or external).
 /// Also allows mouse movement input
-#[cfg_attr(feature = "plugins", cglue_trait)]
+#[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]
 #[int_result]
 pub trait MouseWriter: Send {
-
     fn init(&mut self);
 
     /// Sends mouse button press down event
@@ -61,12 +64,10 @@ pub trait MouseWriter: Send {
     /// Ensures that mouse writer is set back into a neutral state.
     fn clear_keys(&mut self) -> Result<()>;
 
-
     // mouse move abilities (might make this a separate trait. Undecided):
 
     /// Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically
     fn mouse_move(&mut self, x: i32, y: i32) -> Result<()>;
-
 }
 
 // TODO Later on. For now, memflow handles this.
@@ -74,22 +75,3 @@ pub trait MouseWriter: Send {
 // pub trait MouseReader {
 //
 // }
-
-/// Defines what features this plugin supports
-bitflags::bitflags! {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-    struct FeatureSupport: u8 {
-        const READ_MOUSE = 0x01;
-        const WRITE_MOUSE = 0x02;
-        const READ_KEYBOARD = 0x04;
-        const WRITE_KEYBOARD = 0x08;
-        const INTERCEPT_MOUSE = 0x10;
-        const INTERCEPT_KEYBOARD = 0x20;
-        const ALL = Self::READ_MOUSE.bits()
-                    | Self::WRITE_MOUSE.bits()
-                    | Self::READ_KEYBOARD.bits()
-                    | Self::WRITE_KEYBOARD.bits()
-                    | Self::INTERCEPT_MOUSE.bits()
-                    | Self::INTERCEPT_KEYBOARD.bits();
-    }
-}

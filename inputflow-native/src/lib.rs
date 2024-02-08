@@ -1,4 +1,3 @@
-
 //! Example plugin library.
 //!
 //! This plugin crate will not be known to the user, both parties will interact with the help of
@@ -6,107 +5,115 @@
 
 use inputflow::prelude::*;
 use inputflow::*;
-use std::collections::HashMap;
-
-use inputflow::cglue as cglue;
+use inputflow::cglue;
+use inputflow::cglue::*;
 
 #[derive(Default)]
-struct KvRoot {
-    store: KvStore,
+struct NativePluginRoot {
+    store: i32,
+    controller: InputFlowNative,
 }
 
-impl<'a> PluginInner<'a> for KvRoot {
-    type BorrowedType = Fwd<&'a mut KvStore>;
-    type OwnedType = KvStore;
-    type OwnedTypeMut = KvStore;
+impl<'a> PluginInner<'a> for NativePluginRoot {
+
+    type BorrowedType = Fwd<&'a mut InputFlowNative>;
+
+    type OwnedType = InputFlowNative;
+    type OwnedTypeMut = InputFlowNative;
 
     fn borrow_features(&'a mut self) -> Self::BorrowedType {
-        self.store.forward_mut()
+        self.controller.forward_mut()
     }
 
     fn into_features(self) -> Self::OwnedType {
-        self.store
+        self.controller
     }
 
     fn mut_features(&'a mut self) -> &'a mut Self::OwnedTypeMut {
-        &mut self.store
+        &mut self.controller
     }
 }
 
 #[derive(Debug, Default, Clone)]
-struct KvStore {
-    map: HashMap<String, usize>,
-}
+pub struct InputFlowNative {}
 
-impl MainFeature for KvStore {
-    fn print_self(&self) {
-        println!("{:?}", self.map);
+impl Loadable for InputFlowNative {
+    fn name(&self) -> abi_stable::std_types::RString {
+        "inputflow_win32_native".into()
+    }
+
+    fn capabilities(&self) -> u8 {
+        IF_PLUGIN_HEAD.features.bits()
     }
 }
 
-impl KeyValueStore for KvStore {
-    fn write_key_value(&mut self, name: &str, val: usize) {
-        self.map.insert(name.to_string(), val);
+impl KeyboardWriter for InputFlowNative {
+    #[doc = r" Sends keyboard press down event"]
+    fn send_key_down(&mut self, key: u32) -> Result<()> {
+        todo!()
     }
 
-    fn get_key_value(&self, name: &str) -> usize {
-        self.map.get(name).copied().unwrap_or(0)
-    }
-}
-
-impl KeyValueDumper for KvStore {
-    fn dump_key_values<'a>(&'a self, callback: KeyValueCallback<'a>) {
-        self.map
-            .iter()
-            .map(|(k, v)| KeyValue(k.as_str().into(), *v))
-            .feed_into(callback);
+    #[doc = r" Releases a key that was set to down previously"]
+    fn send_key_up(&mut self, key: u32) -> Result<()> {
+        todo!()
     }
 
-    fn print_ints(&self, iter: CIterator<i32>) {
-        for (cnt, i) in iter.enumerate() {
-            println!("{}: {}", cnt, i);
-        }
+    #[doc = r" Presses a key and lets it go all in one for when users do not care about specific timings"]
+    fn press_key(&mut self, key: u32) -> Result<()> {
+        todo!()
+    }
+
+    #[doc = r" clears all active pressed keys. Useful for cleaning up multiple keys presses in one go."]
+    #[doc = r" Ensures that keyboard writer is set back into a neutral state."]
+    fn clear_keys(&mut self) -> Result<()> {
+        todo!()
     }
 }
 
-cglue_impl_group!(KvStore, FeaturesGroup,
-// Owned `KvStore` has these types
-{
-    KeyValueStore,
-    KeyValueDumper,
-},
-// The forward type can not be cloned, and KeyValueDumper is not implemented
-{
-    KeyValueStore,
-});
+impl MouseWriter for InputFlowNative {
+    fn init(&mut self) {
+        todo!()
+    }
+
+    #[doc = r" Sends mouse button press down event"]
+    fn send_key_down(&mut self, key: u32) -> Result<()> {
+        todo!()
+    }
+
+    #[doc = r" Releases a mouse button that was set to down previously"]
+    fn send_key_up(&mut self, key: u32) -> Result<()> {
+        todo!()
+    }
+
+    #[doc = r" Presses a  mouse button and lets it go all in one for when users do not care about specific timings"]
+    fn press_key(&mut self, key: u32) -> Result<()> {
+        todo!()
+    }
+
+    #[doc = r" clears all active pressed  mouse buttons. Useful for cleaning up multiple mouse button presses in one go."]
+    #[doc = r" Ensures that mouse writer is set back into a neutral state."]
+    fn clear_keys(&mut self) -> Result<()> {
+        todo!()
+    }
+
+    #[doc = r" Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically"]
+    fn mouse_move(&mut self, x: i32, y: i32) -> Result<()> {
+        todo!()
+    }
+}
+
+cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter, Clone}, {} );
 
 extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>) -> PluginInnerArcBox<'static> {
-    trait_obj!((KvRoot::default(), lib.clone()) as PluginInner)
+    // type_identity!();
+    trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner)
+
 }
 
+
 #[no_mangle]
-pub static PLUGIN_HEADER: PluginHeader = PluginHeader {
+pub static IF_PLUGIN_HEAD: PluginHeader = PluginHeader {
+    features: FeatureSupport::WRITE_KEYBOARD | FeatureSupport::WRITE_MOUSE,
     layout: ROOT_LAYOUT,
     create: create_plugin,
 };
-
-
-
-
-
-
-
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
