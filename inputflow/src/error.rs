@@ -9,6 +9,8 @@ pub enum InputFlowError {
     Loading = 2,
     Symbol = 3,
     Abi = 4,
+    InvalidKey = 5,
+    SendError = 6,
 }
 
 impl IntError for InputFlowError {
@@ -22,6 +24,8 @@ impl IntError for InputFlowError {
             2 => Self::Loading,
             3 => Self::Symbol,
             4 => Self::Abi,
+            5 => Self::InvalidKey,
+            6 => Self::SendError,
             _ => unreachable!(),
         }
     }

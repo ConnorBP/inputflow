@@ -49,25 +49,24 @@ pub trait KeyboardWriter: Send {
 #[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]
 #[int_result]
 pub trait MouseWriter: Send {
-    fn init(&mut self);
-
     /// Sends mouse button press down event
-    fn send_key_down(&mut self, key: u32) -> Result<()>;
+    fn send_button_down(&mut self, key: u32) -> Result<()>;
 
     /// Releases a mouse button that was set to down previously
-    fn send_key_up(&mut self, key: u32) -> Result<()>;
+    fn send_button_up(&mut self, key: u32) -> Result<()>;
 
     /// Presses a  mouse button and lets it go all in one for when users do not care about specific timings
-    fn press_key(&mut self, key: u32) -> Result<()>;
+    fn click_button(&mut self, key: u32) -> Result<()>;
 
     /// clears all active pressed  mouse buttons. Useful for cleaning up multiple mouse button presses in one go.
     /// Ensures that mouse writer is set back into a neutral state.
-    fn clear_keys(&mut self) -> Result<()>;
+    fn clear_buttons(&mut self) -> Result<()>;
 
     // mouse move abilities (might make this a separate trait. Undecided):
 
     /// Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically
-    fn mouse_move(&mut self, x: i32, y: i32) -> Result<()>;
+    fn mouse_move_relative(&mut self, x: i32, y: i32) -> Result<()>;
+    
 }
 
 // TODO Later on. For now, memflow handles this.
