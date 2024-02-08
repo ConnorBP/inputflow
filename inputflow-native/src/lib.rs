@@ -7,10 +7,10 @@ use inputflow::prelude::*;
 use inputflow::*;
 use inputflow::cglue;
 use inputflow::cglue::*;
+use v1::abi_stable::type_identity;
 
 #[derive(Default)]
 struct NativePluginRoot {
-    store: i32,
     controller: InputFlowNative,
 }
 
@@ -102,18 +102,17 @@ impl MouseWriter for InputFlowNative {
     }
 }
 
-cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter, Clone}, {} );
+cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
 
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>) -> PluginInnerArcBox<'static> {
+extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>)-> PluginInnerArcBox<'static> {
     // type_identity!();
     trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner)
-
 }
 
 
 #[no_mangle]
 pub static IF_PLUGIN_HEAD: PluginHeader = PluginHeader {
-    features: FeatureSupport::WRITE_KEYBOARD | FeatureSupport::WRITE_MOUSE,
+    features: FeatureSupport::from_bits_retain(FeatureSupport::WRITE_KEYBOARD.bits() | FeatureSupport::WRITE_MOUSE.bits()),
     layout: ROOT_LAYOUT,
     create: create_plugin,
 };

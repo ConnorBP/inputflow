@@ -4,9 +4,9 @@ use cglue::prelude::v1::*;
 use crate::{error::Result, headers::FeatureSupport};
 
 
-#[cfg_attr(feature = "plugins", cglue_trait)]// type_identity!()
+#[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]//
 /// Main interface for loadable plugins
-pub trait Loadable: GetStaticEquivalent_ {
+pub trait Loadable {
     
     // type Instance: StableAbi;
     // type InputArg;

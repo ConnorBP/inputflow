@@ -18,5 +18,5 @@ bitflags = "^2.4.2"
 
 [features]
 default = ["plugins", "std"]
-plugins = ["libloading", "abi_stable", "cglue/layout_checks"]
+plugins = ["libloading", "abi_stable", "cglue/layout_checks", "cglue/abi_stable"]
 std = ["cglue/std"]
