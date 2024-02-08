@@ -1,7 +1,6 @@
 pub use abi_stable::type_layout::TypeLayout;
-use abi_stable::{abi_stability::GetStaticEquivalent_, std_types::RString, type_identity, StableAbi};
 use cglue::prelude::v1::*;
-use crate::{error::Result, headers::FeatureSupport};
+use crate::error::Result;
 
 
 #[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]//

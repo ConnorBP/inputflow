@@ -7,13 +7,11 @@ use inputflow::{
     cglue::{result::from_int_result, *},
     error::InputFlowError,
     prelude::*,
-    *,
 };
 use std::ffi::CString;
 use std::mem::MaybeUninit;
-use std::ops::Deref;
 use ::std::time::Duration;
-use std::{error, io};
+use std::io;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 

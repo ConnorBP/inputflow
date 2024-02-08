@@ -5,7 +5,7 @@
 
 use inputflow::prelude::*;
 use enigo::{
-    Button, Direction::{self, Press, Release}, Enigo, Key, Keyboard, Mouse, Settings
+    Button, Direction, Enigo, Keyboard, Mouse, Settings
 };
 
 #[derive(Default)]

@@ -9,7 +9,7 @@ use cglue::prelude::v1::{trait_group::compare_layouts, *};
 use headers::PluginHeader;
 use core::mem::MaybeUninit;
 use libloading::{library_filename, Library, Symbol};
-use api_traits::{ControllerFeatures, KeyboardWriter, Loadable, MouseWriter};
+use api_traits::{ControllerFeatures, Loadable};
 
 #[cglue_trait]
 pub trait PluginInner<'a> {
