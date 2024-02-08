@@ -15,7 +15,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 inputflow = { version = "*", path = "../inputflow"}
-enigo = { git = "https://github.com/enigo-rs/enigo", tag="v0.2.0-rc2" }
+enigo = { git = "https://github.com/enigo-rs/enigo", commit = "b543814" }
 
 [features]
 plugins = ["inputflow/plugins"]

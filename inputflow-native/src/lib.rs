@@ -157,7 +157,6 @@ impl MouseWriter for InputFlowNative {
 
     #[doc = r" Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically"]
     fn mouse_move_relative(&mut self, x: i32, y: i32) -> Result<()> {
-        // TODO: investigate why this is not working when mouse is on second monitor
         self.enigo.move_mouse(x, y, enigo::Coordinate::Rel).map_err(|_| InputFlowError::SendError)
     }
 }
