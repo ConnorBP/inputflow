@@ -83,7 +83,7 @@ fn keycode_to_button(btn: u32) -> Option<Button> {
         0x07 => Some(Button::ScrollUp),
         0x08 => Some(Button::ScrollDown),
         0x09 => Some(Button::ScrollLeft),
-        0x10 => Some(Button::ScrollRight),
+        0xA => Some(Button::ScrollRight),
         _ => None,
     }
 }
