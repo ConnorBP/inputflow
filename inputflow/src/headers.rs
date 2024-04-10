@@ -23,7 +23,6 @@ bitflags::bitflags! {
     }
 }
 
-
 // impl StableAbi for FeatureSupport {
 //     type IsNonZeroType = True;
 
