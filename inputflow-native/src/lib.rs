@@ -3,10 +3,8 @@
 //! This plugin crate will not be known to the user, both parties will interact with the help of
 //! the shared plugin API.
 
+use enigo::{Button, Direction, Enigo, Keyboard, Mouse, Settings};
 use inputflow::prelude::*;
-use enigo::{
-    Button, Direction, Enigo, Keyboard, Mouse, Settings
-};
 
 #[derive(Default)]
 struct NativePluginRoot {
@@ -14,7 +12,6 @@ struct NativePluginRoot {
 }
 
 impl<'a> PluginInner<'a> for NativePluginRoot {
-
     type BorrowedType = Fwd<&'a mut InputFlowNative>;
 
     type OwnedType = InputFlowNative;
@@ -56,10 +53,15 @@ impl Loadable for InputFlowNative {
 
 impl Default for InputFlowNative {
     fn default() -> Self {
-        Self { enigo: Enigo::new(&Settings { release_keys_when_dropped: true, ..Default::default() }).expect("setting up enigo") }
+        Self {
+            enigo: Enigo::new(&Settings {
+                release_keys_when_dropped: true,
+                ..Default::default()
+            })
+            .expect("setting up enigo"),
+        }
     }
 }
-
 
 /// VK_LBUTTON	0x01	Left mouse button
 /// VK_RBUTTON	0x02	Right mouse button
@@ -81,8 +83,8 @@ fn keycode_to_button(btn: u32) -> Option<Button> {
         0x07 => Some(Button::ScrollUp),
         0x08 => Some(Button::ScrollDown),
         0x09 => Some(Button::ScrollLeft),
-        0x10 => Some(Button::ScrollRight),
-        _=> None
+        0xA => Some(Button::ScrollRight),
+        _ => None,
     }
 }
 
@@ -110,11 +112,12 @@ impl KeyboardWriter for InputFlowNative {
 }
 
 impl MouseWriter for InputFlowNative {
-
     #[doc = r" Sends mouse button press down event"]
     fn send_button_down(&mut self, button: u32) -> Result<()> {
         if let Some(key) = keycode_to_button(button) {
-            self.enigo.button(key, Direction::Press).map_err(|_|InputFlowError::SendError)
+            self.enigo
+                .button(key, Direction::Press)
+                .map_err(|_| InputFlowError::SendError)
         } else {
             Err(InputFlowError::InvalidKey)
         }
@@ -123,7 +126,9 @@ impl MouseWriter for InputFlowNative {
     #[doc = r" Releases a mouse button that was set to down previously"]
     fn send_button_up(&mut self, button: u32) -> Result<()> {
         if let Some(button) = keycode_to_button(button) {
-            self.enigo.button(button, Direction::Release).map_err(|_|InputFlowError::SendError)
+            self.enigo
+                .button(button, Direction::Release)
+                .map_err(|_| InputFlowError::SendError)
         } else {
             Err(InputFlowError::InvalidKey)
         }
@@ -132,7 +137,9 @@ impl MouseWriter for InputFlowNative {
     #[doc = r" Presses a  mouse button and lets it go all in one for when users do not care about specific timings"]
     fn click_button(&mut self, button: u32) -> Result<()> {
         if let Some(button) = keycode_to_button(button) {
-            self.enigo.button(button, Direction::Click).map_err(|_|InputFlowError::SendError)
+            self.enigo
+                .button(button, Direction::Click)
+                .map_err(|_| InputFlowError::SendError)
         } else {
             Err(InputFlowError::InvalidKey)
         }
@@ -157,21 +164,24 @@ impl MouseWriter for InputFlowNative {
 
     #[doc = r" Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically"]
     fn mouse_move_relative(&mut self, x: i32, y: i32) -> Result<()> {
-        self.enigo.move_mouse(x, y, enigo::Coordinate::Rel).map_err(|_| InputFlowError::SendError)
+        self.enigo
+            .move_mouse(x, y, enigo::Coordinate::Rel)
+            .map_err(|_| InputFlowError::SendError)
     }
 }
 
 cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
 
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>)-> PluginInnerArcBox<'static> {
+extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>) -> PluginInnerArcBox<'static> {
     // type_identity!();
     trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner)
 }
 
-
 #[no_mangle]
 pub static IF_PLUGIN_HEAD: PluginHeader = PluginHeader {
-    features: FeatureSupport::from_bits_retain(FeatureSupport::WRITE_KEYBOARD.bits() | FeatureSupport::WRITE_MOUSE.bits()),
+    features: FeatureSupport::from_bits_retain(
+        FeatureSupport::WRITE_KEYBOARD.bits() | FeatureSupport::WRITE_MOUSE.bits(),
+    ),
     layout: ROOT_LAYOUT,
     create: create_plugin,
 };
