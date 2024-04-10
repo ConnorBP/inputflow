@@ -1,12 +1,10 @@
+use crate::error::Result;
 pub use abi_stable::type_layout::TypeLayout;
 use cglue::prelude::v1::*;
-use crate::error::Result;
 
-
-#[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)]//
+#[cfg_attr(feature = "plugins", cglue_trait, cglue_forward)] //
 /// Main interface for loadable plugins
 pub trait Loadable {
-    
     // type Instance: StableAbi;
     // type InputArg;
     // type CInputArg: StableAbi;
@@ -65,7 +63,6 @@ pub trait MouseWriter: Send {
 
     /// Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically
     fn mouse_move_relative(&mut self, x: i32, y: i32) -> Result<()>;
-    
 }
 
 // TODO Later on. For now, memflow handles this.

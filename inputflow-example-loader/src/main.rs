@@ -3,15 +3,15 @@
 //! This crate loads binary plugins using the API, and performs some operations with mandatory and
 //! optional traits.
 
+use ::std::time::Duration;
 use inputflow::{
     cglue::{result::from_int_result, *},
     error::InputFlowError,
     prelude::*,
 };
 use std::ffi::CString;
-use std::mem::MaybeUninit;
-use ::std::time::Duration;
 use std::io;
+use std::mem::MaybeUninit;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -53,10 +53,11 @@ fn main() -> Result<()> {
                 obj.clear_buttons()?;
             }
         } else {
-            println!("ERROR: Some features were not valid in bytes: {:#b}", borrowed.capabilities());
+            println!(
+                "ERROR: Some features were not valid in bytes: {:#b}",
+                borrowed.capabilities()
+            );
         }
-
-        
 
         println!("Borrowed done.");
     }
@@ -69,8 +70,8 @@ fn main() -> Result<()> {
             let scale = 5;
             // wigg the mouse out for a few seconds
             for i in 0..1000 {
-                let x = (i%(5*scale))-2*scale;
-                let y = (i-2)%(7*scale)-3*scale;
+                let x = (i % (5 * scale)) - 2 * scale;
+                let y = (i - 2) % (7 * scale) - 3 * scale;
                 obj.mouse_move_relative(x, y)?;
                 std::thread::sleep(Duration::from_millis(4));
             }

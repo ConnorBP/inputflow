@@ -1,15 +1,15 @@
 pub mod api_traits;
-pub mod headers;
 pub mod error;
+pub mod headers;
 
-use error::{InputFlowError, Result};
 use abi_stable::type_layout::TypeLayout;
 use abi_stable::StableAbi;
-use cglue::prelude::v1::{trait_group::compare_layouts, *};
-use headers::PluginHeader;
-use core::mem::MaybeUninit;
-use libloading::{library_filename, Library, Symbol};
 use api_traits::{ControllerFeatures, Loadable};
+use cglue::prelude::v1::{trait_group::compare_layouts, *};
+use core::mem::MaybeUninit;
+use error::{InputFlowError, Result};
+use headers::PluginHeader;
+use libloading::{library_filename, Library, Symbol};
 
 #[cglue_trait]
 pub trait PluginInner<'a> {
@@ -34,8 +34,6 @@ pub trait Plugin: for<'a> PluginInner<'a> {}
 impl<T: for<'a> PluginInner<'a>> Plugin for T {}
 
 // pub type KeyValueCallback<'a> = OpaqueCallback<'a, KeyValue<'a>>;
-
-
 
 /// Load a plugin from a given library.
 ///
@@ -112,13 +110,13 @@ pub mod abi_stable {
 #[allow(ambiguous_glob_reexports)]
 pub mod prelude {
     pub mod v1 {
+        pub use crate::abi_stable;
         pub use crate::api_traits::*;
         pub use crate::cglue::*;
         pub use crate::error::*;
-        pub use crate::iter::*;
         pub use crate::headers::*;
+        pub use crate::iter::*;
         pub use crate::*;
-        pub use crate::abi_stable;
     }
     pub use v1::*;
 }
