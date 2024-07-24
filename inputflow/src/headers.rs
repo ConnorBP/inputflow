@@ -32,9 +32,12 @@ bitflags::bitflags! {
 /// Plugin header that the API looks for.
 ///
 /// Plugins should define the header with name `PLUGIN_HEADER` with no mangling.
+/// the function interface exposed by plugins, "create", accepts a reference to the library interface
+/// as well as a raw ffi c_str (char ptr) to the arguments for plugin init
+/// each plugin may decide how to parse these arguments themselves and must provide documentation on their usage.
 #[repr(C)]
 pub struct PluginHeader {
     pub features: FeatureSupport,
     pub layout: &'static TypeLayout,
-    pub create: extern "C" fn(&CArc<cglue::trait_group::c_void>) -> PluginInnerArcBox<'static>,
+    pub create: extern "C" fn(&CArc<cglue::trait_group::c_void>, *const std::ffi::c_char) -> PluginInnerArcBox<'static>,
 }

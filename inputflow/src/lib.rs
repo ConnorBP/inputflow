@@ -1,12 +1,14 @@
 pub mod api_traits;
 pub mod error;
 pub mod headers;
+pub mod key_types;
 
 use abi_stable::type_layout::TypeLayout;
 use abi_stable::StableAbi;
 use api_traits::{ControllerFeatures, Loadable};
 use cglue::prelude::v1::{trait_group::compare_layouts, *};
 use core::mem::MaybeUninit;
+use ::std::ffi::CString;
 use error::{InputFlowError, Result};
 use headers::PluginHeader;
 use libloading::{library_filename, Library, Symbol};
@@ -75,7 +77,7 @@ unsafe fn load_plugin_impl(name: &str) -> Result<PluginInnerArcBox<'static>> {
     }
 
     let arc = CArc::from(lib);
-    Ok((header.create)(&arc.into_opaque()))
+    Ok((header.create)(&arc.into_opaque(), CString::new("").unwrap().into_raw()))
 }
 
 /// Layout for the root vtable.
@@ -84,17 +86,6 @@ unsafe fn load_plugin_impl(name: &str) -> Result<PluginInnerArcBox<'static>> {
 /// Other layouts are not necessary, because the very root depends on them already.
 #[no_mangle]
 pub static ROOT_LAYOUT: &TypeLayout = PluginInnerArcBox::LAYOUT;
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
-//     }
-// }
 
 #[doc(hidden)]
 pub mod cglue {
@@ -116,6 +107,7 @@ pub mod prelude {
         pub use crate::error::*;
         pub use crate::headers::*;
         pub use crate::iter::*;
+        pub use crate::key_types::*;
         pub use crate::*;
     }
     pub use v1::*;

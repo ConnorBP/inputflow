@@ -44,8 +44,8 @@ fn main() -> Result<()> {
             // borrow a generic trait object of type &mut (impl Loadable + MouseWriter)
             if let Some(obj) = as_mut!(borrowed impl MouseWriter) {
                 println!("Using borrowed mouse:");
-                obj.send_button_down(1)?;
-                obj.send_button_up(1)?;
+                obj.send_button_down(MouseButton::Left)?;
+                obj.send_button_up(MouseButton::Left)?;
             }
 
             if let Some(obj) = as_mut!(borrowed impl MouseWriter) {
