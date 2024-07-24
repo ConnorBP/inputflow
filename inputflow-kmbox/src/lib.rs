@@ -5,6 +5,7 @@ use ::std::time::Duration;
 
 use dataview::PodMethods;
 use inputflow::prelude::*;
+use keycodes::KMBoxKeyboardKeyCode;
 use serialport::SerialPort;
 use format_bytes::format_bytes;
 
@@ -67,6 +68,39 @@ impl InputFlowKMBox {
         })?;
         Ok(())
     }
+
+    pub fn km_set_key(&mut self, key: KeyboardKey, is_down: bool) -> Result<()> {
+        let km_key = KMBoxKeyboardKeyCode::try_from(key)?;
+
+        let cmd = if is_down {
+            format_bytes!(b"km.down({})\r\n", km_key)
+        } else {
+            format_bytes!(b"km.up({})\r\n", km_key)
+        };
+
+        self.port.write(cmd.as_bytes()).map_err(|e| {
+            // log serial failure details if logging is enabled
+            log::warn!("command km.down/km.up \"{cmd:?}\" failed: {e:?}.");
+            // return error to result as InputFlowError type.
+            InputFlowError::SendError
+        })?;
+        Ok(())
+    }
+
+    pub fn km_press_key(&mut self, key: KeyboardKey) -> Result<()> {
+        let km_key = KMBoxKeyboardKeyCode::try_from(key)?;
+        
+        // press key command with some timing variation
+        let cmd = format_bytes!(b"km.press({},15,50)\r\n", km_key);
+
+        self.port.write(cmd.as_bytes()).map_err(|e| {
+            // log serial failure details if logging is enabled
+            log::warn!("command km.press({km_key}) \"{cmd:?}\" failed: {e:?}.");
+            // return error to result as InputFlowError type.
+            InputFlowError::SendError
+        })?;
+        Ok(())
+    }
 }
 
 impl Loadable for InputFlowKMBox {
@@ -82,23 +116,25 @@ impl Loadable for InputFlowKMBox {
 impl KeyboardWriter for InputFlowKMBox {
     #[doc = r"Sends keyboard press down event"]
     fn send_key_down(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
+        self.km_set_key(key, true)
     }
 
     #[doc = r" Releases a key that was set to down previously"]
     fn send_key_up(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
+        self.km_set_key(key, false)
     }
 
     #[doc = r" Presses a key and lets it go all in one for when users do not care about specific timings"]
     fn press_key(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
+        self.km_press_key(key)
     }
 
     #[doc = r" clears all active pressed keys. Useful for cleaning up multiple keys presses in one go."]
     #[doc = r" Ensures that keyboard writer is set back into a neutral state."]
     fn clear_keys(&mut self) -> Result<()> {
-        todo!()
+        // TODO: Add a currently pressed keys map and recursively set them unpressed
+        log::info!("kmbox clear_keys not implemented yet...");
+        Ok(())
     }
 }
 
@@ -148,6 +184,8 @@ impl MouseWriter for InputFlowKMBox {
             _=> {return Err(InputFlowError::Parameter);}
         };
 
+        // TODO: find anything other than km.click so that it may have some human-like delay rather than instantanious clicks
+
          
         Ok(())
     }
@@ -179,15 +217,18 @@ cglue_impl_group!(InputFlowKMBox, ControllerFeatures,{KeyboardWriter, MouseWrite
 
 /// Exposed interface that is called by the user of the plugin to instantiate it
 extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
+    env_logger::builder()
+    // .filter_level(log::LevelFilter::Info)
+    .init();
     Ok(trait_obj!(
         (
             KMBoxPluginRoot::new(
                 args::parse_args(args).map_err(|e| {
-
+                    log::error!("Invalid parameters were passed to inputflow_kmbox: {e:?}.");
                     InputFlowError::Parameter
                 })?
             ).map_err(|e| {
-
+                log::error!("Failed to load KMBox device: {e:?}.");
                 InputFlowError::Loading
             })?,
             lib.clone()

@@ -1,9 +1,10 @@
+use format_bytes::{write_bytes, DisplayBytes};
 use inputflow::{error::InputFlowError, key_types::KeyboardKey};
 
 
 /// This enum represents which keyboard keys map to which integer for the KMBox api
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum KMBoxKeyboardKeyCode {
     None = 0x00,
     ErrorRollover = 0x01,
@@ -454,5 +455,18 @@ impl TryFrom<KeyboardKey> for KMBoxKeyboardKeyCode {
             KeyboardKey::RWIN => Self::RightGui,
             _ => return Err(InputFlowError::InvalidKey),
         })
+    }
+}
+
+impl DisplayBytes for KMBoxKeyboardKeyCode {
+    fn display_bytes(&self, output: &mut dyn std::io::Write) -> std::io::Result<()> {
+        write_bytes!(output, b"{}", (self.clone() as u8))
+    }
+}
+
+impl std::fmt::Display for KMBoxKeyboardKeyCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f,"{:?}", self)
+        // write!(f,"{}", (self.clone() as u8))
     }
 }
