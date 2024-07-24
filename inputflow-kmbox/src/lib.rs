@@ -9,6 +9,7 @@ use serialport::SerialPort;
 use format_bytes::format_bytes;
 
 mod args;
+pub mod keycodes;
 
 struct KMBoxPluginRoot {
     controller: InputFlowKMBox,
