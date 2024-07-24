@@ -88,28 +88,28 @@ fn keycode_to_button(btn: MouseButton) -> Option<Button> {
     }
 }
 
-impl KeyboardWriter for InputFlowNative {
-    #[doc = r" Sends keyboard press down event"]
-    fn send_key_down(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
-    }
+// impl KeyboardWriter for InputFlowNative {
+//     #[doc = r" Sends keyboard press down event"]
+//     fn send_key_down(&mut self, key: KeyboardKey) -> Result<()> {
+//         todo!()
+//     }
 
-    #[doc = r" Releases a key that was set to down previously"]
-    fn send_key_up(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
-    }
+//     #[doc = r" Releases a key that was set to down previously"]
+//     fn send_key_up(&mut self, key: KeyboardKey) -> Result<()> {
+//         todo!()
+//     }
 
-    #[doc = r" Presses a key and lets it go all in one for when users do not care about specific timings"]
-    fn press_key(&mut self, key: KeyboardKey) -> Result<()> {
-        todo!()
-    }
+//     #[doc = r" Presses a key and lets it go all in one for when users do not care about specific timings"]
+//     fn press_key(&mut self, key: KeyboardKey) -> Result<()> {
+//         todo!()
+//     }
 
-    #[doc = r" clears all active pressed keys. Useful for cleaning up multiple keys presses in one go."]
-    #[doc = r" Ensures that keyboard writer is set back into a neutral state."]
-    fn clear_keys(&mut self) -> Result<()> {
-        todo!()
-    }
-}
+//     #[doc = r" clears all active pressed keys. Useful for cleaning up multiple keys presses in one go."]
+//     #[doc = r" Ensures that keyboard writer is set back into a neutral state."]
+//     fn clear_keys(&mut self) -> Result<()> {
+//         todo!()
+//     }
+// }
 
 impl MouseWriter for InputFlowNative {
     #[doc = r" Sends mouse button press down event"]
@@ -174,9 +174,9 @@ impl MouseWriter for InputFlowNative {
 // =================================== CGlue Plugin init and Header definitions ====================================
 // ================================================================================================================= 
 
-cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
-
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
+cglue_impl_group!(InputFlowNative, ControllerFeatures,{MouseWriter}, {MouseWriter} );
+#[allow(improper_ctypes_definitions)] // the linter is being stupid and not noticing the repr(u8)
+extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, _args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
     // type_identity!();
     Ok(trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner))
 }
@@ -184,7 +184,7 @@ extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const
 #[no_mangle]
 pub static IF_PLUGIN_HEAD: PluginHeader = PluginHeader {
     features: FeatureSupport::from_bits_retain(
-        FeatureSupport::WRITE_KEYBOARD.bits() | FeatureSupport::WRITE_MOUSE.bits(),
+        FeatureSupport::WRITE_MOUSE.bits(),
     ),
     layout: ROOT_LAYOUT,
     create: create_plugin,
