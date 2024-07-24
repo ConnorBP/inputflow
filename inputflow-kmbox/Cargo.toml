@@ -18,9 +18,15 @@ crate-type = ["lib", "cdylib"]
 inputflow = { version = "*", path = "../inputflow"}
 # cross-platform serial communication library
 serialport = "4.4"
+# format a byte string (ascii) for serial output
+format-bytes = "0.3"
+# allow .as_bytes() on most types
+dataview = "1.0"
 # input argument parsing
 serde = "1.0"
 ron = "0.8"
+# logging
+log = { version = "0.4", default-features = false }
 
 [features]
 plugins = ["inputflow/plugins"]

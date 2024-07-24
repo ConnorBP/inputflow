@@ -1,6 +1,5 @@
 // Arguments for the plugin initialization
 
-use std::default;
 use ::std::error::Error;
 
 // default config values for each platform
@@ -55,11 +54,29 @@ pub(crate) struct Args {
     pub timeout_ms: u64,
 }
 
+impl Default for Args {
+    fn default() -> Self {
+        Self {
+            auto_select: true,
+            device_name: "USB-SERIAL CH340".to_string(),
+            com_port: "COM8".to_string(),
+            baud_rate: 115200,
+            timeout_ms: Default::default() }
+    }
+}
+
 /// handles the raw string args to extract useful information for initialization
 pub(super) fn parse_args(args: *const std::ffi::c_char)  -> Result<Args, Box<dyn Error>> {
     // safety:
     // the plugin caller created this string with into_raw
     // therefor we must use from_raw on it to make sure it dealocates afterwards
     // furthermore, we will not be modifying the string or its length
-    Ok(ron::from_str(unsafe{std::ffi::CString::from_raw(args as *mut _)}.to_str()?)?)
+    let args_str = unsafe{std::ffi::CString::from_raw(args as *mut _)};
+
+    if(args_str.is_empty()) {
+        Ok(Args::default())
+    } else {
+        log::info!("inputflow_kmbox received args: {args_str:?}");
+        Ok(ron::from_str(args_str.to_str()?)?)
+    }
 }

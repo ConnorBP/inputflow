@@ -11,6 +11,7 @@ pub enum InputFlowError {
     Abi = 4,
     InvalidKey = 5,
     SendError = 6,
+    Parameter = 7,
 }
 
 impl IntError for InputFlowError {
@@ -26,6 +27,7 @@ impl IntError for InputFlowError {
             4 => Self::Abi,
             5 => Self::InvalidKey,
             6 => Self::SendError,
+            7 => Self::Parameter,
             _ => unreachable!(),
         }
     }

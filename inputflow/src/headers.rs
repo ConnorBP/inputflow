@@ -1,7 +1,7 @@
 use abi_stable::type_layout::TypeLayout;
 use cglue::prelude::v1::*;
 
-use crate::PluginInnerArcBox;
+use crate::{error::Result, PluginInnerArcBox};
 
 bitflags::bitflags! {
     /// Defines what features this plugin supports
@@ -39,5 +39,5 @@ bitflags::bitflags! {
 pub struct PluginHeader {
     pub features: FeatureSupport,
     pub layout: &'static TypeLayout,
-    pub create: extern "C" fn(&CArc<cglue::trait_group::c_void>, *const std::ffi::c_char) -> PluginInnerArcBox<'static>,
+    pub create: extern "C" fn(&CArc<cglue::trait_group::c_void>, *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>>,
 }

@@ -170,11 +170,15 @@ impl MouseWriter for InputFlowNative {
     }
 }
 
+// ================================================================================================================= 
+// =================================== CGlue Plugin init and Header definitions ====================================
+// ================================================================================================================= 
+
 cglue_impl_group!(InputFlowNative, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
 
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> PluginInnerArcBox<'static> {
+extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
     // type_identity!();
-    trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner)
+    Ok(trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner))
 }
 
 #[no_mangle]

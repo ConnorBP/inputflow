@@ -77,7 +77,7 @@ unsafe fn load_plugin_impl(name: &str) -> Result<PluginInnerArcBox<'static>> {
     }
 
     let arc = CArc::from(lib);
-    Ok((header.create)(&arc.into_opaque(), CString::new("").unwrap().into_raw()))
+    (header.create)(&arc.into_opaque(), CString::new("").unwrap().into_raw())
 }
 
 /// Layout for the root vtable.
