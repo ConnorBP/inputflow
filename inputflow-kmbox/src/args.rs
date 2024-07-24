@@ -11,7 +11,7 @@ fn default_com_port() -> String {
     #[cfg(target_family="unix")]
     {"/dev/ttyUSB0".to_string()}
     #[cfg(target_family="windows")]
-    {"COM8".to_string()}
+    {"COM6".to_string()}
 }
 
 /// Returns the default serial device name to look for
@@ -43,7 +43,7 @@ pub(crate) struct Args {
     #[serde(default = "default_device_name")]
     pub device_name: String,
     /// The serial port path to connect to (used when auto_select is false)
-    /// defaults to `COM8` on Windows and `/dev/ttyUSB0` on Unix
+    /// defaults to `COM6` on Windows and `/dev/ttyUSB0` on Unix
     #[serde(default = "default_com_port")]
     pub com_port: String,
     #[serde(default = "default_baud_rate")]
@@ -59,7 +59,7 @@ impl Default for Args {
         Self {
             auto_select: true,
             device_name: "USB-SERIAL CH340".to_string(),
-            com_port: "COM8".to_string(),
+            com_port: "COM6".to_string(),
             baud_rate: 115200,
             timeout_ms: Default::default() }
     }
