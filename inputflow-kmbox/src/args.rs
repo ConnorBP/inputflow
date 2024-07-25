@@ -73,7 +73,7 @@ pub(super) fn parse_args(args: *const std::ffi::c_char)  -> Result<Args, Box<dyn
     // furthermore, we will not be modifying the string or its length
     let args_str = unsafe{std::ffi::CString::from_raw(args as *mut _)};
 
-    if(args_str.is_empty()) {
+    if args_str.is_empty() {
         Ok(Args::default())
     } else {
         log::info!("inputflow_kmbox received args: {args_str:?}");

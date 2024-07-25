@@ -225,6 +225,7 @@ impl MouseWriter for InputFlowKMBox {
 cglue_impl_group!(InputFlowKMBox, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
 
 /// Exposed interface that is called by the user of the plugin to instantiate it
+#[allow(improper_ctypes_definitions)] // the linter is being stupid and not noticing the repr(u8)
 extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
     env_logger::builder()
     // .filter_level(log::LevelFilter::Info)

@@ -39,5 +39,6 @@ bitflags::bitflags! {
 pub struct PluginHeader {
     pub features: FeatureSupport,
     pub layout: &'static TypeLayout,
+    #[allow(improper_ctypes_definitions)] // the linter is being stupid and not noticing the repr(u8)
     pub create: extern "C" fn(&CArc<cglue::trait_group::c_void>, *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>>,
 }
