@@ -1,6 +1,6 @@
 // Arguments for the plugin initialization
 
-use ::std::error::Error;
+use std::error::Error;
 
 // default config values for each platform
 
@@ -8,10 +8,14 @@ use ::std::error::Error;
 /// on windows this is generally `COM#`
 /// on unix this is generally a path like `/dev/ttyUSB#`
 fn default_com_port() -> String {
-    #[cfg(target_family="unix")]
-    {"/dev/ttyUSB0".to_string()}
-    #[cfg(target_family="windows")]
-    {"COM6".to_string()}
+    #[cfg(target_family = "unix")]
+    {
+        "/dev/ttyUSB0".to_string()
+    }
+    #[cfg(target_family = "windows")]
+    {
+        "COM6".to_string()
+    }
 }
 
 /// Returns the default serial device name to look for
@@ -61,18 +65,18 @@ impl Default for Args {
             device_name: "USB-SERIAL CH340".to_string(),
             com_port: "COM6".to_string(),
             baud_rate: 115200,
-            timeout_ms: Default::default()
+            timeout_ms: Default::default(),
         }
     }
 }
 
 /// handles the raw string args to extract useful information for initialization
-pub(super) fn parse_args(args: *const std::ffi::c_char)  -> Result<Args, Box<dyn Error>> {
+pub(super) fn parse_args(args: *const std::ffi::c_char) -> Result<Args, Box<dyn Error>> {
     // safety:
     // the plugin caller created this string with into_raw
     // therefor we must use from_raw on it to make sure it dealocates afterwards
     // furthermore, we will not be modifying the string or its length
-    let args_str = unsafe{std::ffi::CString::from_raw(args as *mut _)};
+    let args_str = unsafe { std::ffi::CString::from_raw(args as *mut _) };
 
     if args_str.is_empty() {
         Ok(Args::default())

@@ -1,13 +1,13 @@
 //! KMBox plugin for inputflow.
 //! Controls user input over serial interface to KMBox device.
 
-use ::std::time::Duration;
+use std::time::Duration;
 
 use dataview::PodMethods;
+use format_bytes::format_bytes;
 use inputflow::prelude::*;
 use keycodes::KMBoxKeyboardKeyCode;
 use serialport::{SerialPort, SerialPortType, UsbPortInfo};
-use format_bytes::format_bytes;
 
 mod args;
 pub mod keycodes;
@@ -18,7 +18,10 @@ struct KMBoxPluginRoot {
 
 impl KMBoxPluginRoot {
     pub fn new(args: args::Args) -> std::result::Result<Self, Box<dyn std::error::Error>> {
-        log::info!("Initializing KMBox plugin with config {}", ron::to_string(&args)?);
+        log::info!(
+            "Initializing KMBox plugin with config {}",
+            ron::to_string(&args)?
+        );
 
         let mut port_path = args.com_port;
 
@@ -26,28 +29,38 @@ impl KMBoxPluginRoot {
             let ports = serialport::available_ports()?;
 
             for port in ports {
-                log::trace!("Found serial port {} : {:?}", port.port_name, port.port_type);
+                log::trace!(
+                    "Found serial port {} : {:?}",
+                    port.port_name,
+                    port.port_type
+                );
 
                 match port.port_type {
-                    SerialPortType::UsbPort(UsbPortInfo{product: Some(product_name),..}) => {
+                    SerialPortType::UsbPort(UsbPortInfo {
+                        product: Some(product_name),
+                        ..
+                    }) => {
                         if product_name.starts_with(&args.device_name) {
-                            log::info!("Automatically loaded port {} from device {}", port.port_name, product_name);
+                            log::info!(
+                                "Automatically loaded port {} from device {}",
+                                port.port_name,
+                                product_name
+                            );
                             port_path = port.port_name;
                             break;
                         }
-                    },
-                    _=> {}
+                    }
+                    _ => {}
                 }
             }
-                
         }
 
         Ok(KMBoxPluginRoot {
             controller: InputFlowKMBox {
                 port: serialport::new(port_path, args.baud_rate)
-                        .timeout(Duration::from_millis(args.timeout_ms))
-                        .open()?,
-            }
+                    .timeout(Duration::from_millis(args.timeout_ms))
+                    .open()?,
+            },
         })
     }
 }
@@ -77,7 +90,6 @@ pub struct InputFlowKMBox {
 }
 
 impl InputFlowKMBox {
-
     /// calls km.left() with value to set current left click
     /// 1 = set down
     /// 0 = release
@@ -113,7 +125,7 @@ impl InputFlowKMBox {
 
     pub fn km_press_key(&mut self, key: KeyboardKey) -> Result<()> {
         let km_key = KMBoxKeyboardKeyCode::try_from(key)?;
-        
+
         // press key command with some timing variation
         let cmd = format_bytes!(b"km.press({},15,50)\r\n", km_key);
 
@@ -181,35 +193,32 @@ impl MouseWriter for InputFlowKMBox {
     #[doc = r" Sends mouse button press down event"]
     fn send_button_down(&mut self, button: MouseButton) -> Result<()> {
         match button {
-            MouseButton::Left => {
-                self.km_set_left(1)
-            },
-            _=> {Err(InputFlowError::Parameter)}
+            MouseButton::Left => self.km_set_left(1),
+            _ => Err(InputFlowError::Parameter),
         }
     }
 
     #[doc = r" Releases a mouse button that was set to down previously"]
     fn send_button_up(&mut self, button: MouseButton) -> Result<()> {
         match button {
-            MouseButton::Left => {
-                self.km_set_left(0)
-            },
-            _=> {Err(InputFlowError::Parameter)}
+            MouseButton::Left => self.km_set_left(0),
+            _ => Err(InputFlowError::Parameter),
         }
     }
 
     #[doc = r" Presses a  mouse button and lets it go all in one for when users do not care about specific timings"]
     fn click_button(&mut self, button: MouseButton) -> Result<()> {
-
         let Some(km_button) = mouse_button_to_km(button) else {
             return Err(InputFlowError::InvalidKey);
         };
-        
+
         let cmd = match button {
             MouseButton::Left => {
                 format_bytes!(b"km.click({})\r\n", km_button)
-            },
-            _=> {return Err(InputFlowError::Parameter);}
+            }
+            _ => {
+                return Err(InputFlowError::Parameter);
+            }
         };
 
         // TODO: find anything other than km.click so that it may have some human-like delay rather than instantanious clicks
@@ -219,7 +228,7 @@ impl MouseWriter for InputFlowKMBox {
             // return error to result as InputFlowError type.
             InputFlowError::SendError
         })?;
-         
+
         Ok(())
     }
 
@@ -231,7 +240,7 @@ impl MouseWriter for InputFlowKMBox {
 
     #[doc = r" Sends a mouse move command to move it x dpi-pixels horizontally, and y vertically"]
     fn mouse_move_relative(&mut self, x: i32, y: i32) -> Result<()> {
-        let cmd = format_bytes!(b"km.move({},{})\r\n", x,y);
+        let cmd = format_bytes!(b"km.move({},{})\r\n", x, y);
         self.port.write(cmd.as_bytes()).map_err(|e| {
             // log serial failure details if logging is enabled
             log::warn!("command km.move({x},{y}) \"{cmd:?}\" failed: {e:?}.");
@@ -242,32 +251,32 @@ impl MouseWriter for InputFlowKMBox {
     }
 }
 
-// ================================================================================================================= 
+// =================================================================================================================
 // =================================== CGlue Plugin init and Header definitions ====================================
-// ================================================================================================================= 
+// =================================================================================================================
 
 cglue_impl_group!(InputFlowKMBox, ControllerFeatures,{KeyboardWriter, MouseWriter}, {KeyboardWriter, MouseWriter} );
 
 /// Exposed interface that is called by the user of the plugin to instantiate it
 #[allow(improper_ctypes_definitions)] // the linter is being stupid and not noticing the repr(u8)
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
+extern "C" fn create_plugin(
+    lib: &CArc<cglue::trait_group::c_void>,
+    args: *const std::ffi::c_char,
+) -> Result<PluginInnerArcBox<'static>> {
     env_logger::builder()
-    // .filter_level(log::LevelFilter::Info)
-    .init();
-    Ok(trait_obj!(
-        (
-            KMBoxPluginRoot::new(
-                args::parse_args(args).map_err(|e| {
-                    log::error!("Invalid parameters were passed to inputflow_kmbox: {e:?}.");
-                    InputFlowError::Parameter
-                })?
-            ).map_err(|e| {
-                log::error!("Failed to load KMBox device: {e:?}.");
-                InputFlowError::Loading
-            })?,
-            lib.clone()
-        ) as PluginInner
-    ))
+        // .filter_level(log::LevelFilter::Info)
+        .init();
+    Ok(trait_obj!((
+        KMBoxPluginRoot::new(args::parse_args(args).map_err(|e| {
+            log::error!("Invalid parameters were passed to inputflow_kmbox: {e:?}.");
+            InputFlowError::Parameter
+        })?)
+        .map_err(|e| {
+            log::error!("Failed to load KMBox device: {e:?}.");
+            InputFlowError::Loading
+        })?,
+        lib.clone()
+    ) as PluginInner))
 }
 
 /// Static plugin header values defining the plugin's capabilities

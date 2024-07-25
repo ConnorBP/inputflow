@@ -3,7 +3,6 @@
 //! This crate loads binary plugins using the API, and performs some operations with mandatory and
 //! optional traits.
 
-use ::std::time::Duration;
 use inputflow::{
     cglue::{result::from_int_result, *},
     error::InputFlowError,
@@ -12,6 +11,7 @@ use inputflow::{
 use std::ffi::CString;
 use std::io;
 use std::mem::MaybeUninit;
+use std::time::Duration;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
