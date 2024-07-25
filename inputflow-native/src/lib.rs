@@ -170,22 +170,27 @@ impl MouseWriter for InputFlowNative {
     }
 }
 
-// ================================================================================================================= 
+// =================================================================================================================
 // =================================== CGlue Plugin init and Header definitions ====================================
-// ================================================================================================================= 
+// =================================================================================================================
 
-cglue_impl_group!(InputFlowNative, ControllerFeatures,{MouseWriter}, {MouseWriter} );
+cglue_impl_group!(InputFlowNative, ControllerFeatures, { MouseWriter }, {
+    MouseWriter
+});
 #[allow(improper_ctypes_definitions)] // the linter is being stupid and not noticing the repr(u8)
-extern "C" fn create_plugin(lib: &CArc<cglue::trait_group::c_void>, _args: *const std::ffi::c_char) -> Result<PluginInnerArcBox<'static>> {
+extern "C" fn create_plugin(
+    lib: &CArc<cglue::trait_group::c_void>,
+    _args: *const std::ffi::c_char,
+) -> Result<PluginInnerArcBox<'static>> {
     // type_identity!();
-    Ok(trait_obj!((NativePluginRoot::default(), lib.clone()) as PluginInner))
+    Ok(trait_obj!(
+        (NativePluginRoot::default(), lib.clone()) as PluginInner
+    ))
 }
 
 #[no_mangle]
 pub static IF_PLUGIN_HEAD: PluginHeader = PluginHeader {
-    features: FeatureSupport::from_bits_retain(
-        FeatureSupport::WRITE_MOUSE.bits(),
-    ),
+    features: FeatureSupport::from_bits_retain(FeatureSupport::WRITE_MOUSE.bits()),
     layout: ROOT_LAYOUT,
     create: create_plugin,
 };

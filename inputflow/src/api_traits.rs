@@ -1,4 +1,7 @@
-use crate::{error::Result, key_types::{KeyboardKey,MouseButton}};
+use crate::{
+    error::Result,
+    key_types::{KeyboardKey, MouseButton},
+};
 pub use abi_stable::type_layout::TypeLayout;
 use cglue::prelude::v1::*;
 

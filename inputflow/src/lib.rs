@@ -8,10 +8,10 @@ use abi_stable::StableAbi;
 use api_traits::{ControllerFeatures, Loadable};
 use cglue::prelude::v1::{trait_group::compare_layouts, *};
 use core::mem::MaybeUninit;
-use ::std::ffi::CString;
 use error::{InputFlowError, Result};
 use headers::PluginHeader;
 use libloading::{library_filename, Library, Symbol};
+use std::ffi::CString;
 
 #[cglue_trait]
 pub trait PluginInner<'a> {
@@ -90,7 +90,7 @@ pub static ROOT_LAYOUT: &TypeLayout = PluginInnerArcBox::LAYOUT;
 
 #[doc(hidden)]
 pub mod cglue {
-    pub use ::cglue::prelude::v1::*;
+    pub use cglue::prelude::v1::*;
 }
 
 #[doc(hidden)]
