@@ -14,7 +14,7 @@ categories = [ "api-bindings" ]
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-inputflow = { version = "*", path = "../inputflow"}
+inputflow = { version = "0.1", path = "../inputflow" }
 enigo = "0.2"
 
 [features]

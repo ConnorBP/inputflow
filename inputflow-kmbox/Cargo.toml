@@ -15,7 +15,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 # inputflow api base
-inputflow = { version = "*", path = "../inputflow"}
+inputflow = { version = "0.1", path = "../inputflow" }
 # cross-platform serial communication library
 serialport = "4.4"
 # format a byte string (ascii) for serial output
