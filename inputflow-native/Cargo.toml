@@ -7,8 +7,8 @@ description = "inputflow user input abstract plugin framework"
 readme = "README.md"
 repository = "https://github.com/ConnorBP/inputflow"
 license = "MIT"
-keywords = [ "inputflow", "api", "arduino", "dma" ]
-categories = [ "api-bindings" ]
+keywords = ["inputflow", "api", "arduino", "dma"]
+categories = ["api-bindings"]
 
 [lib]
 crate-type = ["lib", "cdylib"]

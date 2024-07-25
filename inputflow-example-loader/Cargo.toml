@@ -7,8 +7,8 @@ description = "example inputflow plugin loading usage"
 readme = "README.md"
 repository = "https://github.com/ConnorBP/inputflow"
 license = "MIT"
-keywords = [ "inputflow", "api", "arduino", "dma", "kmbox", "serial" ]
-categories = [ "command-line-utilities" ]
+keywords = ["inputflow", "api", "arduino", "dma", "kmbox", "serial"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 inputflow = { version = "0.1", path = "../inputflow" }
