@@ -61,7 +61,8 @@ impl Default for Args {
             device_name: "USB-SERIAL CH340".to_string(),
             com_port: "COM6".to_string(),
             baud_rate: 115200,
-            timeout_ms: Default::default() }
+            timeout_ms: Default::default()
+        }
     }
 }
 

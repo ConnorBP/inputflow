@@ -18,6 +18,8 @@ struct KMBoxPluginRoot {
 
 impl KMBoxPluginRoot {
     pub fn new(args: args::Args) -> std::result::Result<Self, Box<dyn std::error::Error>> {
+        log::info!("Initializing KMBox plugin with config {}", ron::to_string(&args)?);
+
         Ok(KMBoxPluginRoot {
             controller: InputFlowKMBox {
                 port: serialport::new(args.com_port, args.baud_rate)

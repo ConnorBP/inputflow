@@ -53,12 +53,13 @@ impl<T: for<'a> PluginInner<'a>> Plugin for T {}
 #[no_mangle]
 pub unsafe extern "C" fn load_plugin(
     name: ReprCStr<'_>,
+    args: ReprCStr<'_>,
     ok_out: &mut MaybeUninit<PluginInnerArcBox<'static>>,
 ) -> i32 {
-    load_plugin_impl(name.as_ref()).into_int_out_result(ok_out)
+    load_plugin_impl(name.as_ref(), args.as_ref()).into_int_out_result(ok_out)
 }
 
-unsafe fn load_plugin_impl(name: &str) -> Result<PluginInnerArcBox<'static>> {
+unsafe fn load_plugin_impl(name: &str, args: &str) -> Result<PluginInnerArcBox<'static>> {
     let mut current_exe = std::env::current_exe().map_err(|_| InputFlowError::Path)?;
     current_exe.set_file_name(library_filename(name));
     let lib = Library::new(current_exe).map_err(|e| {
@@ -77,7 +78,7 @@ unsafe fn load_plugin_impl(name: &str) -> Result<PluginInnerArcBox<'static>> {
     }
 
     let arc = CArc::from(lib);
-    (header.create)(&arc.into_opaque(), CString::new("").unwrap().into_raw())
+    (header.create)(&arc.into_opaque(), CString::new(args).unwrap().into_raw())
 }
 
 /// Layout for the root vtable.

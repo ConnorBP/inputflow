@@ -26,10 +26,15 @@ fn main() -> Result<()> {
         lib = "inputflow_native".to_string();
     }
 
+    println!("Enter plugin args:");
+    let mut args = String::new();
+    io::stdin().read_line(&mut args)?;
+
     let mut obj = MaybeUninit::uninit();
     let res = unsafe {
         load_plugin(
             CString::new(lib.trim()).unwrap().as_c_str().into(),
+            CString::new(args.trim()).unwrap().as_c_str().into(),
             &mut obj,
         )
     };
