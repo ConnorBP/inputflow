@@ -3,10 +3,12 @@ resolver = "2"
 members = [
     "inputflow",
     "inputflow-native",
+    "inputflow-kmbox",
     "inputflow-example-loader"
 ]
 default-members = [
     "inputflow",
     "inputflow-native",
+    "inputflow-kmbox",
     "inputflow-example-loader"
 ]

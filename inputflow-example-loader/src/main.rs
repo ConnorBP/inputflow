@@ -26,10 +26,15 @@ fn main() -> Result<()> {
         lib = "inputflow_native".to_string();
     }
 
+    println!("Enter plugin args:");
+    let mut args = String::new();
+    io::stdin().read_line(&mut args)?;
+
     let mut obj = MaybeUninit::uninit();
     let res = unsafe {
         load_plugin(
             CString::new(lib.trim()).unwrap().as_c_str().into(),
+            CString::new(args.trim()).unwrap().as_c_str().into(),
             &mut obj,
         )
     };
@@ -44,8 +49,8 @@ fn main() -> Result<()> {
             // borrow a generic trait object of type &mut (impl Loadable + MouseWriter)
             if let Some(obj) = as_mut!(borrowed impl MouseWriter) {
                 println!("Using borrowed mouse:");
-                obj.send_button_down(1)?;
-                obj.send_button_up(1)?;
+                obj.send_button_down(MouseButton::Left)?;
+                obj.send_button_up(MouseButton::Left)?;
             }
 
             if let Some(obj) = as_mut!(borrowed impl MouseWriter) {

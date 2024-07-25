@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::{error::Result, key_types::{KeyboardKey,MouseButton}};
 pub use abi_stable::type_layout::TypeLayout;
 use cglue::prelude::v1::*;
 
@@ -22,13 +22,13 @@ cglue_trait_group!(ControllerFeatures, { Loadable }, { KeyboardWriter, MouseWrit
 #[int_result]
 pub trait KeyboardWriter: Send {
     /// Sends keyboard press down event
-    fn send_key_down(&mut self, key: u32) -> Result<()>;
+    fn send_key_down(&mut self, key: KeyboardKey) -> Result<()>;
 
     /// Releases a key that was set to down previously
-    fn send_key_up(&mut self, key: u32) -> Result<()>;
+    fn send_key_up(&mut self, key: KeyboardKey) -> Result<()>;
 
     /// Presses a key and lets it go all in one for when users do not care about specific timings
-    fn press_key(&mut self, key: u32) -> Result<()>;
+    fn press_key(&mut self, key: KeyboardKey) -> Result<()>;
 
     /// clears all active pressed keys. Useful for cleaning up multiple keys presses in one go.
     /// Ensures that keyboard writer is set back into a neutral state.
@@ -47,13 +47,13 @@ pub trait KeyboardWriter: Send {
 #[int_result]
 pub trait MouseWriter: Send {
     /// Sends mouse button press down event
-    fn send_button_down(&mut self, key: u32) -> Result<()>;
+    fn send_button_down(&mut self, key: MouseButton) -> Result<()>;
 
     /// Releases a mouse button that was set to down previously
-    fn send_button_up(&mut self, key: u32) -> Result<()>;
+    fn send_button_up(&mut self, key: MouseButton) -> Result<()>;
 
     /// Presses a  mouse button and lets it go all in one for when users do not care about specific timings
-    fn click_button(&mut self, key: u32) -> Result<()>;
+    fn click_button(&mut self, key: MouseButton) -> Result<()>;
 
     /// clears all active pressed  mouse buttons. Useful for cleaning up multiple mouse button presses in one go.
     /// Ensures that mouse writer is set back into a neutral state.

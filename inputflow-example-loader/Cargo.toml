@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 inputflow = { version = "*", path = "../inputflow" }
+log = "0.4"
