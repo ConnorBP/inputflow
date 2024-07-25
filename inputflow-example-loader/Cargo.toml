@@ -1,10 +1,15 @@
 [package]
 name = "inputflow-example-loader"
 version = "0.1.0"
+authors = ["ConnorBP <Connor.Postma@gmail.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "example inputflow plugin loading usage"
+readme = "README.md"
+repository = "https://github.com/ConnorBP/inputflow"
+license = "MIT"
+keywords = [ "inputflow", "api", "arduino", "dma", "kmbox", "serial" ]
+categories = [ "command-line-utilities" ]
 
 [dependencies]
-inputflow = { version = "*", path = "../inputflow" }
+inputflow = { version = "0.1", path = "../inputflow" }
 log = "0.4"

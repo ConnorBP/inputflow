@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["ConnorBP <Connor.Postma@gmail.com>"]
 edition = "2021"
 description = "KMBox plugin for the inputflow framework"
-readme = "../README.md"
+readme = "README.md"
 repository = "https://github.com/ConnorBP/inputflow"
 license = "MIT"
 keywords = [ "inputflow", "api", "arduino", "dma", "kmbox", "serial" ]
@@ -15,7 +15,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 # inputflow api base
-inputflow = { version = "*", path = "../inputflow"}
+inputflow = { version = "0.1", path = "../inputflow" }
 # cross-platform serial communication library
 serialport = "4.4"
 # format a byte string (ascii) for serial output

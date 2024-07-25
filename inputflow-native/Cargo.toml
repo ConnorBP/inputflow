@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["ConnorBP <Connor.Postma@gmail.com>"]
 edition = "2021"
 description = "inputflow user input abstract plugin framework"
-readme = "../README.md"
+readme = "README.md"
 repository = "https://github.com/ConnorBP/inputflow"
 license = "MIT"
 keywords = [ "inputflow", "api", "arduino", "dma" ]
@@ -14,8 +14,8 @@ categories = [ "api-bindings" ]
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-inputflow = { version = "*", path = "../inputflow"}
-enigo = { git = "https://github.com/enigo-rs/enigo", commit = "b543814" }
+inputflow = { version = "0.1", path = "../inputflow" }
+enigo = "0.2"
 
 [features]
 plugins = ["inputflow/plugins"]
