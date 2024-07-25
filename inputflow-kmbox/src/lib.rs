@@ -6,7 +6,7 @@ use ::std::time::Duration;
 use dataview::PodMethods;
 use inputflow::prelude::*;
 use keycodes::KMBoxKeyboardKeyCode;
-use serialport::SerialPort;
+use serialport::{SerialPort, SerialPortType, UsbPortInfo};
 use format_bytes::format_bytes;
 
 mod args;
@@ -20,9 +20,31 @@ impl KMBoxPluginRoot {
     pub fn new(args: args::Args) -> std::result::Result<Self, Box<dyn std::error::Error>> {
         log::info!("Initializing KMBox plugin with config {}", ron::to_string(&args)?);
 
+        let mut port_path = args.com_port;
+
+        if args.auto_select {
+            let ports = serialport::available_ports()?;
+
+            for port in ports {
+                log::trace!("Found serial port {} : {:?}", port.port_name, port.port_type);
+
+                match port.port_type {
+                    SerialPortType::UsbPort(UsbPortInfo{product: Some(product_name),..}) => {
+                        if product_name.starts_with(&args.device_name) {
+                            log::info!("Automatically loaded port {} from device {}", port.port_name, product_name);
+                            port_path = port.port_name;
+                            break;
+                        }
+                    },
+                    _=> {}
+                }
+            }
+                
+        }
+
         Ok(KMBoxPluginRoot {
             controller: InputFlowKMBox {
-                port: serialport::new(args.com_port, args.baud_rate)
+                port: serialport::new(port_path, args.baud_rate)
                         .timeout(Duration::from_millis(args.timeout_ms))
                         .open()?,
             }
