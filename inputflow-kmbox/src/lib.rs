@@ -176,16 +176,25 @@ impl MouseWriter for InputFlowKMBox {
 
     #[doc = r" Presses a  mouse button and lets it go all in one for when users do not care about specific timings"]
     fn click_button(&mut self, button: MouseButton) -> Result<()> {
+
+        let Some(km_button) = mouse_button_to_km(button) else {
+            return Err(InputFlowError::InvalidKey);
+        };
         
         let cmd = match button {
             MouseButton::Left => {
-                //format_bytes!(b"km.click({})\r\n", button_id)
+                format_bytes!(b"km.click({})\r\n", km_button)
             },
             _=> {return Err(InputFlowError::Parameter);}
         };
 
         // TODO: find anything other than km.click so that it may have some human-like delay rather than instantanious clicks
-
+        self.port.write(cmd.as_bytes()).map_err(|e| {
+            // log serial failure details if logging is enabled
+            log::warn!("command km.click({button:?}) \"{cmd:?}\" failed: {e:?}.");
+            // return error to result as InputFlowError type.
+            InputFlowError::SendError
+        })?;
          
         Ok(())
     }
