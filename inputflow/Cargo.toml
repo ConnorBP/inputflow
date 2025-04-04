@@ -1,6 +1,6 @@
 [package]
 name = "inputflow"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["ConnorBP <connor.postma@gmail.com>"]
 edition = "2021"
 description = "inputflow user input abstract plugin framework"

@@ -450,7 +450,7 @@ dependencies = [
 
 [[package]]
 name = "inputflow"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "abi_stable",
  "bitflags 2.6.0",
