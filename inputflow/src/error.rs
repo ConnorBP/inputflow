@@ -12,6 +12,7 @@ pub enum InputFlowError {
     InvalidKey = 5,
     SendError = 6,
     Parameter = 7,
+    Uninitialized = 8,
 }
 
 impl IntError for InputFlowError {

@@ -72,6 +72,15 @@ fn main() -> Result<()> {
 
         if let Some(obj) = as_mut!(owned impl MouseWriter) {
             println!("Using owned MouseWriter:");
+
+            //click once
+            let mut click_result = obj.click_button(MouseButton::Left);
+
+            println!("Click Result: {click_result:?}");
+
+            click_result = obj.send_button_down(MouseButton::Left);
+            println!("Press Result: {click_result:?}");
+            // wiggle
             let scale = 5;
             // wigg the mouse out for a few seconds
             for i in 0..1000 {
@@ -80,6 +89,8 @@ fn main() -> Result<()> {
                 obj.mouse_move_relative(x, y)?;
                 std::thread::sleep(Duration::from_millis(4));
             }
+            click_result = obj.send_button_up(MouseButton::Left);
+            println!("Release Result: {click_result:?}");
         }
 
         // Casting can be combined with a multiple of optional traits.

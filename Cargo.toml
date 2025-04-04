@@ -4,11 +4,13 @@ members = [
     "inputflow",
     "inputflow-native",
     "inputflow-kmbox",
+    "inputflow-qmp",
     "inputflow-example-loader"
 ]
 default-members = [
     "inputflow",
     "inputflow-native",
     "inputflow-kmbox",
+    "inputflow-qmp",
     "inputflow-example-loader"
 ]
